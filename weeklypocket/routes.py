@@ -3,6 +3,7 @@ import requests
 from weeklypocket import app
 import webbrowser
 import yaml
+import random
 
 with open("config.yml", 'r') as keys_file:
     config = yaml.safe_load(keys_file)
@@ -26,7 +27,11 @@ def authorized(code):
     r = requests.post("https://getpocket.com/v3/oauth/authorize", headers=headers, json=data)
     if r.ok:
         access_token = r.json()['access_token']
-        return 'Successfully authorized'
+        data = {"access_token": access_token, "consumer_key": CONSUMER_KEY, "favorite": 1}
+        r = requests.get("https://getpocket.com/v3/get/", json=data)
+        favourites = r.json()['list']
+        choice = random.choice(list(favourites.keys()))
+        return redirect(favourites[choice]["resolved_url"])
     else:
         return 'Failed'
 
