@@ -1,4 +1,9 @@
 *.swp
 __pycache__
 *.yml
-flask-env
+pocket-env
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
