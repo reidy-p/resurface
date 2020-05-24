@@ -7,3 +7,7 @@ This project is under development.
 TODO
 --
 * Research the best way to do authentication with Python/Flask
+* Share your favourites with others? (If authenticated, etc.)
+* Convert to permanent links
+* Suggested tags
+* Full text search
