@@ -2,6 +2,7 @@
 __pycache__
 *.pyc
 *.yml
+*.zip
 gmail_credentials.json
 *.pickle
 pocket-env
