@@ -59,7 +59,7 @@ def send_message(service, user_id, message):
     print('An error occurred: %s' % error)
 
 def my_handler(recipient, context):
-    bucket = "weekly-pocket"
+    bucket = "resurface"
     file_name = "gmail_token.pickle"
     
     service = get_gmail_token(bucket, file_name)

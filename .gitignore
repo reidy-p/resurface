@@ -5,7 +5,7 @@ __pycache__
 *.zip
 gmail_credentials.json
 *.pickle
-pocket-env
+resurface-env
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
