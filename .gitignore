@@ -3,6 +3,7 @@ __pycache__
 *.pyc
 *.yml
 *.zip
+*.db
 gmail_credentials.json
 *.pickle
 resurface-env
