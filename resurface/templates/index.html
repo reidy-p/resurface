@@ -45,25 +45,12 @@
                 </button>
                 <a class="navbar-brand" href="{{ url_for('index') }}">Resurface</a>
             </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    {% if current_user.is_anonymous %}
-                        <li><a href="{{ url_for('login') }}">Login</a></li>
-                    {% else %}
-                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
-                    {% endif %}
-                </ul>
-            </div>
         </div>
     </nav>
 
     <!-- Marketing messaging and featurettes
     ================================================== -->
     <!-- Wrap the rest of the page in another container to center all the content. -->
-
 
     <div class="container marketing">
     <h1 class="intro-header">Resurface is a spaced repetition service for all your favourite content from the web</h1>
@@ -83,7 +70,7 @@
 
       <div class="row featurette">
         <div class="col-md-7 col-md-push-5">
-          <p class="lead">Choose how often you want to be reminded and what types of content to prioritize</p>
+          <p class="lead">Choose how often you want to be reminded to review your favourite content and what types of content to prioritize</p>
         </div>
         <div class="col-md-5 col-md-pull-7">
           <img class="featurette-image img-responsive center-block" src="{{ url_for('static', filename='img/Bell.png') }}">
