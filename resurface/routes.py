@@ -5,6 +5,7 @@ import random
 from flask_login import current_user, login_user, logout_user
 from resurface.models import User, Item
 from resurface.forms import LoginForm, RegistrationForm
+from sqlalchemy.exc import IntegrityError
 
 @application.route('/')
 def index():
@@ -79,9 +80,11 @@ def callback():
         "favorite": 1
     }
     response = requests.get("https://getpocket.com/v3/get/", json=data)
-    favourites = response.json()['list']
-    choice = random.choice(list(favourites.keys()))
-    for fav in favourites.values():
-        db.session.add(Item(user_id = current_user.id, url = fav['resolved_url']))
-    db.session.commit()
+    favourites = {favourite['resolved_url'] for favourite in response.json()['list'].values()}
+    for favourite in favourites:
+        db.session.add(Item(user_id = current_user.id, url = favourite))
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
     return redirect(url_for('home'))
