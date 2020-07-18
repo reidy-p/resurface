@@ -10,6 +10,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    items = db.relationship('Item', backref='user', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.email) 
@@ -19,3 +20,8 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(140))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

@@ -3,7 +3,7 @@ import requests
 from resurface import application, db
 import random
 from flask_login import current_user, login_user, logout_user
-from resurface.models import User
+from resurface.models import User, Item
 from resurface.forms import LoginForm, RegistrationForm
 
 @application.route('/')
@@ -45,6 +45,10 @@ def logout():
 
 @application.route("/home")
 def home():
+    return render_template('home.html', num_saved_items=len(current_user.items.all()))
+
+@application.route("/import-items")
+def import_items():
     headers = {'Content-Type': "application/json; charset=UTF-8", "X-Accept": "application/json"}
     redirect_uri = url_for("callback", _external=True)
     data = {
@@ -57,7 +61,7 @@ def home():
     session['authorization_code'] = authorization_code
     pocket_auth_url = "https://getpocket.com/auth/authorize"
     url = pocket_auth_url + f"?request_token={authorization_code}&redirect_uri={redirect_uri}"
-    return render_template('home.html', redirect_url=url)
+    return render_template('import.html', redirect_url=url)
 
 @application.route("/callback")
 def callback():
@@ -77,4 +81,7 @@ def callback():
     response = requests.get("https://getpocket.com/v3/get/", json=data)
     favourites = response.json()['list']
     choice = random.choice(list(favourites.keys()))
-    return redirect(favourites[choice]["resolved_url"])
+    for fav in favourites.values():
+        db.session.add(Item(user_id = current_user.id, url = fav['resolved_url']))
+    db.session.commit()
+    return redirect(url_for('home'))
