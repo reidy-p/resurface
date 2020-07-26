@@ -1,17 +1,18 @@
-from flask import render_template, url_for, redirect, session, flash
+from flask import render_template, url_for, redirect, session, flash, jsonify, make_response
 import requests
 from resurface import application, db
 import random
 from flask_login import current_user, login_user, logout_user
 from resurface.models import User, Item, InterestedUser
-from resurface.forms import LoginForm, RegistrationForm, InterestForm
+from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm
+from resurface.email import gmail_authenticate, create_message, send_message
 from sqlalchemy.exc import IntegrityError
 
 @application.route('/', methods=['GET', 'POST'])
 def index():
     form = InterestForm()
     if form.validate_on_submit():
-        interestedUser = InterestedUser(email = form.email.data) 
+        interestedUser = InterestedUser(email = form.email.data)
         db.session.add(interestedUser)
         try:
             db.session.commit()
@@ -20,6 +21,19 @@ def index():
         flash('Thanks for registering your interest!')
         return redirect(url_for('index'))
     return render_template("index.html", form=form)
+
+@application.route('/send-email', methods=['POST'])
+def send_email():
+    service = gmail_authenticate()
+    users = User.query.all()
+    for user in users:
+        items = user.items.all()
+        if len(items) != 0:
+            choice = random.choice(user.items.all())
+            msg = create_message("me", "paul_reidy@outlook.com", "Weekly Pocket", """<a href="{}">link</a>""".format(choice.url))
+            send_message(service, "me", msg)
+    data = {'message': 'Email sent', 'code': 'SUCCESS'}
+    return make_response(jsonify(data), 201)
 
 @application.route('/register', methods=['GET', 'POST'])
 def register():
@@ -57,6 +71,13 @@ def logout():
 @application.route("/home")
 def home():
     return render_template('home.html', num_saved_items=len(current_user.items.all()))
+
+@application.route('/reminders', methods=['GET', 'POST'])
+def reminders():
+    form = ReminderForm()
+    if form.validate_on_submit():
+        print(form.reminderDay.data)
+    return render_template('reminders.html', form=form)
 
 @application.route("/import-items")
 def import_items():

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from resurface.models import User
@@ -25,3 +25,19 @@ class RegistrationForm(FlaskForm):
 class InterestForm(FlaskForm):
     email = StringField('Email Address', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class ReminderForm(FlaskForm):
+    reminder_day = SelectField(
+        u'Reminder Day',
+        choices=[
+            ('mon', 'Monday'),
+            ('tue', 'Tuesday'),
+            ('wed', 'Wednesday'),
+            ('thu', 'Thursday'),
+            ('fri', 'Friday'),
+            ('sat', 'Saturday'),
+            ('sun', 'Sunday')
+        ]
+    )
+    submit = SubmitField('Submit')
+
