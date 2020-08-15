@@ -5,7 +5,8 @@ import random
 from flask_login import current_user, login_user, logout_user
 from resurface.models import User, Item, InterestedUser
 from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm
-from resurface.email import gmail_authenticate, create_message, send_message
+from resurface.email import gmail_authenticate, create_message, send_message, send_email
+from resurface.tasks import sched
 from sqlalchemy.exc import IntegrityError
 
 @application.route('/', methods=['GET', 'POST'])
@@ -21,19 +22,6 @@ def index():
         flash('Thanks for registering your interest!')
         return redirect(url_for('index'))
     return render_template("index.html", form=form)
-
-@application.route('/send-email', methods=['POST'])
-def send_email():
-    service = gmail_authenticate()
-    users = User.query.all()
-    for user in users:
-        items = user.items.all()
-        if len(items) != 0:
-            choice = random.choice(user.items.all())
-            msg = create_message("me", "paul_reidy@outlook.com", "Weekly Pocket", """<a href="{}">link</a>""".format(choice.url))
-            send_message(service, "me", msg)
-    data = {'message': 'Email sent', 'code': 'SUCCESS'}
-    return make_response(jsonify(data), 201)
 
 @application.route('/register', methods=['GET', 'POST'])
 def register():
@@ -75,9 +63,20 @@ def home():
 @application.route('/reminders', methods=['GET', 'POST'])
 def reminders():
     form = ReminderForm()
-    if form.validate_on_submit():
-        print(form.reminderDay.data)
-    return render_template('reminders.html', form=form)
+    if current_user.is_authenticated:
+        if form.validate_on_submit():
+            sched.add_job(send_email,
+                kwargs={'email': current_user.email},
+                trigger='cron',
+                day_of_week=form.reminder_day.data,
+                hour=form.reminder_time.data.hour,
+                minute=form.reminder_time.data.minute
+            )
+            flash('Reminders succesfully changed!')
+            return redirect(url_for('home'))
+        return render_template('reminders.html', form=form)
+    else:
+        return redirect(url_for('login'))
 
 @application.route("/import-items")
 def import_items():
@@ -119,3 +118,4 @@ def callback():
         except IntegrityError:
             db.session.rollback()
     return redirect(url_for('home'))
+

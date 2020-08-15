@@ -7,7 +7,10 @@ from email.mime.text import MIMEText
 import base64
 from urllib.error import HTTPError
 from resurface.models import User, Item, InterestedUser
+from resurface.tasks import sched
 import random
+from flask import make_response, jsonify
+from resurface import application
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
@@ -73,4 +76,16 @@ def send_message(service, user_id, message):
     return message
   except HTTPError as error:
     print('An error occurred: %s' % error)
+
+def send_email(email):
+    with application.app_context():
+        service = gmail_authenticate()
+        user = User.query.filter_by(email=email).first()
+        items = user.items.all()
+        if len(items) != 0:
+            choice = random.choice(user.items.all())
+            msg = create_message("me", email, "Resurface", """<a href="{}">link</a>""".format(choice.url))
+            send_message(service, "me", msg)
+        #data = {'message': 'Email sent', 'code': 'SUCCESS'}
+        #return make_response(jsonify(data), 201)
 
