@@ -72,9 +72,20 @@ def reminders():
                 hour=form.reminder_time.data.hour,
                 minute=form.reminder_time.data.minute
             )
+            reminder_data = {
+                'reminder_day': form.reminder_day.data,
+                'reminder_time': form.reminder_time.data
+            }
+            db.session.query(User).filter(User.id == current_user.id).update(reminder_data)
+            db.session.commit()
             flash('Reminders succesfully changed!')
             return redirect(url_for('home'))
-        return render_template('reminders.html', form=form)
+        return render_template(
+                                'reminders.html',
+                                form=form,
+                                reminder_day=current_user.reminder_day,
+                                reminder_time=current_user.reminder_time #.strftime("%H:%M")
+                              )
     else:
         return redirect(url_for('login'))
 

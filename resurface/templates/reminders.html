@@ -2,6 +2,11 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
+    <p>
+    {% if reminder_day != None %}
+        Current Reminder: {{ reminder_day.capitalize() }} {{ reminder_time.strftime("%H:%M") }}
+    {% endif %}
+    </p>
     <div class="row">
         <div class="col-md-4">
             {{ wtf.quick_form(form) }}
