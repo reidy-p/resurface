@@ -39,22 +39,37 @@ def gmail_authenticate():
     return build('gmail', 'v1', credentials=creds)
 
 
-def create_message(sender, to, subject, message_text):
+def create_message(sender, to, subject, item):
   """Create a message for an email.
 
   Args:
     sender: Email address of the sender.
     to: Email address of the receiver.
     subject: The subject of the email message.
-    message_text: The text of the email message.
+    item: The item to send in the email message.
 
   Returns:
     An object containing a base64url encoded email object.
   """
+
+  from jinja2 import Template
+  message_text = Template("""
+  Hello,<br>
+  <br>
+  <ul>
+    {% for item in items %}
+      <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    {% endfor %}
+  </ul>
+  """)
+  message_text = message_text.render(items=item)
+  #.format(item.url, item.title)
+
   message = MIMEText(message_text, 'html')
   message['to'] = to
   message['from'] = sender
   message['subject'] = subject
+
   return {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
 def send_message(service, user_id, message):
@@ -77,14 +92,14 @@ def send_message(service, user_id, message):
   except HTTPError as error:
     print('An error occurred: %s' % error)
 
-def send_email(email):
+def send_email(email, num_items=2):
     with application.app_context():
         service = gmail_authenticate()
         user = User.query.filter_by(email=email).first()
         items = user.items.all()
         if len(items) != 0:
-            choice = random.choice(user.items.all())
-            msg = create_message("me", email, "Resurface", """<a href="{}">link</a>""".format(choice.url))
+            choice = random.sample(user.items.all(), num_items)
+            msg = create_message("me", email, "Resurface", choice)
             send_message(service, "me", msg)
         #data = {'message': 'Email sent', 'code': 'SUCCESS'}
         #return make_response(jsonify(data), 201)

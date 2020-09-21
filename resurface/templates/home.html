@@ -3,5 +3,10 @@
 <div>
     <p>Welcome to Resurface!</p>
     <p>You currently have {{num_saved_items}} items saved</p>
+    <ul>
+    {% for item in saved_items %}
+        <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    {% endfor %}
+    </ul>
 </div>
 {% endblock %}

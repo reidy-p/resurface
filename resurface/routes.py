@@ -58,7 +58,7 @@ def logout():
 
 @application.route("/home")
 def home():
-    return render_template('home.html', num_saved_items=len(current_user.items.all()))
+    return render_template('home.html', num_saved_items=len(current_user.items.all()), saved_items=current_user.items)
 
 @application.route('/reminders', methods=['GET', 'POST'])
 def reminders():
@@ -121,9 +121,9 @@ def callback():
         "favorite": 1
     }
     response = requests.get("https://getpocket.com/v3/get/", json=data)
-    favourites = {favourite['resolved_url'] for favourite in response.json()['list'].values()}
+    favourites = [favourite for favourite in response.json()['list'].values()]
     for favourite in favourites:
-        db.session.add(Item(user_id = current_user.id, url = favourite))
+        db.session.add(Item(user_id=current_user.id, title=favourite['resolved_title'], url=favourite['resolved_url']))
         try:
             db.session.commit()
         except IntegrityError:
