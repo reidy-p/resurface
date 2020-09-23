@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TimeField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TimeField, IntegerField
 from wtforms.validators import DataRequired
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange
 from resurface.models import User
 
 class LoginForm(FlaskForm):
@@ -41,6 +41,10 @@ class ReminderForm(FlaskForm):
     )
     reminder_time = TimeField(
         'Reminder Time'
+    )
+    num_items = IntegerField(
+        'Number of Items',
+        validators=[NumberRange(min=1, max=10, message='Please enter a value between 1 and 10')]
     )
     submit = SubmitField('Submit')
 

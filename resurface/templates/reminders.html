@@ -4,7 +4,9 @@
 {% block app_content %}
     <p>
     {% if reminder_day != None %}
-        Current Reminder: {{ reminder_day.capitalize() }} {{ reminder_time.strftime("%H:%M") }}
+        Current Reminder: {{ num_items }} items on {{ reminder_day.capitalize() }} at {{ reminder_time.strftime("%H:%M") }}
+    {% else %}
+        No reminders currently setup. Try setting up a reminder below!
     {% endif %}
     </p>
     <div class="row">

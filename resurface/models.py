@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
     items = db.relationship('Item', backref='user', lazy='dynamic')
     reminder_day = db.Column(db.String(120))
     reminder_time = db.Column(db.Time)
+    reminder_items = db.Column(db.Integer)
 
     def __repr__(self):
         return '<User {}>'.format(self.email)

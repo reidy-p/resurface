@@ -66,7 +66,7 @@ def reminders():
     if current_user.is_authenticated:
         if form.validate_on_submit():
             sched.add_job(send_email,
-                kwargs={'email': current_user.email},
+                kwargs={'email': current_user.email, 'num_items': form.num_items.data},
                 trigger='cron',
                 day_of_week=form.reminder_day.data,
                 hour=form.reminder_time.data.hour,
@@ -74,7 +74,8 @@ def reminders():
             )
             reminder_data = {
                 'reminder_day': form.reminder_day.data,
-                'reminder_time': form.reminder_time.data
+                'reminder_time': form.reminder_time.data,
+                'reminder_items': form.num_items.data
             }
             db.session.query(User).filter(User.id == current_user.id).update(reminder_data)
             db.session.commit()
@@ -84,7 +85,8 @@ def reminders():
                                 'reminders.html',
                                 form=form,
                                 reminder_day=current_user.reminder_day,
-                                reminder_time=current_user.reminder_time #.strftime("%H:%M")
+                                reminder_time=current_user.reminder_time,
+                                num_items=current_user.reminder_items
                               )
     else:
         return redirect(url_for('login'))

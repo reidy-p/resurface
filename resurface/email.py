@@ -11,6 +11,7 @@ from resurface.tasks import sched
 import random
 from flask import make_response, jsonify
 from resurface import application
+from jinja2 import Template
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
@@ -52,7 +53,6 @@ def create_message(sender, to, subject, item):
     An object containing a base64url encoded email object.
   """
 
-  from jinja2 import Template
   message_text = Template("""
   Hello,<br>
   <br>
@@ -63,7 +63,6 @@ def create_message(sender, to, subject, item):
   </ul>
   """)
   message_text = message_text.render(items=item)
-  #.format(item.url, item.title)
 
   message = MIMEText(message_text, 'html')
   message['to'] = to
@@ -92,7 +91,7 @@ def send_message(service, user_id, message):
   except HTTPError as error:
     print('An error occurred: %s' % error)
 
-def send_email(email, num_items=2):
+def send_email(email, num_items):
     with application.app_context():
         service = gmail_authenticate()
         user = User.query.filter_by(email=email).first()
