@@ -2,7 +2,7 @@ from flask import render_template, url_for, redirect, session, flash, jsonify, m
 import requests
 from resurface import application, db
 import random
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from resurface.models import User, Item, InterestedUser
 from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm
 from resurface.email import gmail_authenticate, create_message, send_message, send_email
@@ -97,4 +97,16 @@ def reminders():
 def import_items():
     pocket_url = pocket_import()
     return render_template('import.html', pocket_url=pocket_url)
+
+@application.route('/delete/<int:id>')
+@login_required
+def delete(id):
+    post = Item.query.get(id)
+    if post is None:
+        flash('Post not found.')
+        return redirect(url_for('home'))
+    db.session.delete(post)
+    db.session.commit()
+    flash('Item deleted')
+    return redirect(url_for('home'))
 

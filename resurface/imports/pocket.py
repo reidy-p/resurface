@@ -4,6 +4,7 @@ from resurface import application, db
 from resurface.models import User, Item, InterestedUser
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 
 def pocket_import():
     headers = {'Content-Type': "application/json; charset=UTF-8", "X-Accept": "application/json"}
@@ -37,7 +38,15 @@ def callback():
     response = requests.get("https://getpocket.com/v3/get/", json=data)
     favourites = [favourite for favourite in response.json()['list'].values()]
     for favourite in favourites:
-        db.session.add(Item(user_id=current_user.id, title=favourite['resolved_title'], url=favourite['resolved_url']))
+        db.session.add(
+            Item(
+                user_id=current_user.id,
+                title=favourite['resolved_title'],
+                url=favourite['resolved_url'],
+                word_count=favourite['word_count'],
+                time_added=datetime.fromtimestamp(int(favourite['time_added']))
+            )
+        )
         try:
             db.session.commit()
         except IntegrityError:

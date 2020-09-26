@@ -32,6 +32,8 @@ class Item(db.Model):
     __table_args__ = (
         db.UniqueConstraint(url, user_id),
     )
+    word_count = db.Column(db.Integer)
+    time_added = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<Item {}>'.format(self.url)
