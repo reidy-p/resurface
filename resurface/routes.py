@@ -7,6 +7,8 @@ from resurface.models import User, Item, InterestedUser
 from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm
 from resurface.email import gmail_authenticate, create_message, send_message, send_email
 from resurface.tasks import sched
+from resurface.imports import pocket
+from resurface.imports.pocket import pocket_import
 from sqlalchemy.exc import IntegrityError
 
 @application.route('/', methods=['GET', 'POST'])
@@ -93,42 +95,6 @@ def reminders():
 
 @application.route("/import-items")
 def import_items():
-    headers = {'Content-Type': "application/json; charset=UTF-8", "X-Accept": "application/json"}
-    redirect_uri = url_for("callback", _external=True)
-    data = {
-        "redirect_uri": redirect_uri,
-        "consumer_key": application.config['CONSUMER_KEY']
-    }
-    response = requests.post("https://getpocket.com/v3/oauth/request", headers=headers, json=data)
-    authorization_code = response.json()['code']
-
-    session['authorization_code'] = authorization_code
-    pocket_auth_url = "https://getpocket.com/auth/authorize"
-    url = pocket_auth_url + f"?request_token={authorization_code}&redirect_uri={redirect_uri}"
-    return render_template('import.html', redirect_url=url)
-
-@application.route("/callback")
-def callback():
-    headers = {'Content-Type': "application/json; charset=UTF-8", "X-Accept": "application/json"}
-    data = {
-        "code": session['authorization_code'],
-        "consumer_key": application.config['CONSUMER_KEY']
-    }
-    response = requests.post("https://getpocket.com/v3/oauth/authorize", headers=headers, json=data)
-
-    access_token = response.json()['access_token']
-    data = {
-        "access_token": access_token,
-        "consumer_key": application.config['CONSUMER_KEY'],
-        "favorite": 1
-    }
-    response = requests.get("https://getpocket.com/v3/get/", json=data)
-    favourites = [favourite for favourite in response.json()['list'].values()]
-    for favourite in favourites:
-        db.session.add(Item(user_id=current_user.id, title=favourite['resolved_title'], url=favourite['resolved_url']))
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-    return redirect(url_for('home'))
+    pocket_url = pocket_import()
+    return render_template('import.html', pocket_url=pocket_url)
 
