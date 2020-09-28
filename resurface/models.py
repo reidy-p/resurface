@@ -34,6 +34,7 @@ class Item(db.Model):
     )
     word_count = db.Column(db.Integer)
     time_added = db.Column(db.DateTime)
+    source = db.Column(db.String)
 
     def __repr__(self):
         return '<Item {}>'.format(self.url)

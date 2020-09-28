@@ -2,9 +2,12 @@ from flask import render_template, url_for, redirect, session, flash, jsonify, m
 import requests
 from resurface import application, db
 from resurface.models import User, Item, InterestedUser
+from resurface.tasks import sched
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
+import os
+import pickle
 
 def pocket_import():
     headers = {'Content-Type': "application/json; charset=UTF-8", "X-Accept": "application/json"}
@@ -30,6 +33,11 @@ def callback():
     response = requests.post("https://getpocket.com/v3/oauth/authorize", headers=headers, json=data)
 
     access_token = response.json()['access_token']
+
+    if not os.path.exists('pocket_access_token.pickle'):
+        with open('pocket_access_token.pickle', 'wb') as token:
+            pickle.dump(access_token, token)
+
     data = {
         "access_token": access_token,
         "consumer_key": application.config['CONSUMER_KEY'],
@@ -37,23 +45,50 @@ def callback():
     }
     response = requests.get("https://getpocket.com/v3/get/", json=data)
     favourites = [favourite for favourite in response.json()['list'].values()]
-    for favourite in favourites:
-        if favourite['resolved_title'] != '':
-            title = favourite['resolved_title']
+
+    add_items(current_user.id, favourites)
+
+    sched.add_job(
+        check_pocket_updates,
+        kwargs={'user_id': current_user.id},
+        trigger='interval',
+        hours=1
+    )
+
+    return redirect(url_for('home'))
+
+def check_pocket_updates(user_id):
+    with open('pocket_access_token.pickle', 'rb') as token:
+        access_token = pickle.load(token)
+
+    data = {
+        "access_token": access_token,
+        "consumer_key": application.config['CONSUMER_KEY'],
+        "favorite": 1
+    }
+    response = requests.get("https://getpocket.com/v3/get/", json=data)
+    favourites = [favourite for favourite in response.json()['list'].values()]
+
+    add_items(user_id, favourites)
+
+def add_items(user_id, items):
+    for item in items:
+        if item['resolved_title'] != '':
+            title = item['resolved_title']
         else:
-            title = favourite['given_title']
+            title = item['given_title']
         db.session.add(
             Item(
-                user_id=current_user.id,
+                user_id=user_id,
                 title=title,
-                url=favourite['resolved_url'],
-                word_count=favourite['word_count'],
-                time_added=datetime.fromtimestamp(int(favourite['time_added']))
+                url=item['resolved_url'],
+                word_count=item['word_count'],
+                time_added=datetime.fromtimestamp(int(item['time_added'])),
+                source="pocket"
             )
         )
         try:
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-    return redirect(url_for('home'))
 

@@ -72,7 +72,8 @@ def reminders():
     form = ReminderForm()
     if current_user.is_authenticated:
         if form.validate_on_submit():
-            sched.add_job(send_email,
+            sched.add_job(
+                send_email,
                 kwargs={'email': current_user.email, 'num_items': form.num_items.data},
                 trigger='cron',
                 day_of_week=form.reminder_day.data,
