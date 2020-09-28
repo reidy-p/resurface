@@ -38,10 +38,14 @@ def callback():
     response = requests.get("https://getpocket.com/v3/get/", json=data)
     favourites = [favourite for favourite in response.json()['list'].values()]
     for favourite in favourites:
+        if favourite['resolved_title'] != '':
+            title = favourite['resolved_title']
+        else:
+            title = favourite['given_title']
         db.session.add(
             Item(
                 user_id=current_user.id,
-                title=favourite['resolved_title'],
+                title=title,
                 url=favourite['resolved_url'],
                 word_count=favourite['word_count'],
                 time_added=datetime.fromtimestamp(int(favourite['time_added']))
