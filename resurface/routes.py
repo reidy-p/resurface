@@ -60,7 +60,12 @@ def logout():
 
 @application.route("/home")
 def home():
-    return render_template('home.html', num_saved_items=len(current_user.items.all()), saved_items=current_user.items)
+    items = current_user.items.all()
+    return render_template(
+        'home.html',
+        num_saved_items=len(items),
+        saved_items=sorted(items, key=lambda item: item.time_added, reverse=True)
+    )
 
 @application.route('/reminders', methods=['GET', 'POST'])
 def reminders():
