@@ -11,9 +11,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     items = db.relationship('Item', backref='user', lazy='dynamic')
-    reminder_day = db.Column(db.String(120))
-    reminder_time = db.Column(db.Time)
-    reminder_items = db.Column(db.Integer)
+    reminders = db.relationship('Reminder', backref='user', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.email)
@@ -38,6 +36,20 @@ class Item(db.Model):
 
     def __repr__(self):
         return '<Item {}>'.format(self.url)
+
+class Reminder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    reminder_day = db.Column(db.String(120))
+    reminder_time = db.Column(db.Time)
+    reminder_items = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '<Reminder {} items at {} on {}>'.format(
+            self.reminder_items,
+            self.reminder_time,
+            self.reminder_day
+        )
 
 class InterestedUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)

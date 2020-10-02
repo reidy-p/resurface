@@ -3,7 +3,7 @@ import requests
 from resurface import application, db
 import random
 from flask_login import current_user, login_user, logout_user, login_required
-from resurface.models import User, Item, InterestedUser
+from resurface.models import User, Item, InterestedUser, Reminder
 from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm
 from resurface.email import gmail_authenticate, create_message, send_message, send_email
 from resurface.tasks import sched
@@ -80,21 +80,20 @@ def reminders():
                 hour=form.reminder_time.data.hour,
                 minute=form.reminder_time.data.minute
             )
-            reminder_data = {
-                'reminder_day': form.reminder_day.data,
-                'reminder_time': form.reminder_time.data,
-                'reminder_items': form.num_items.data
-            }
-            db.session.query(User).filter(User.id == current_user.id).update(reminder_data)
+            reminder_data = Reminder(
+                user_id = current_user.id,
+                reminder_day = form.reminder_day.data,
+                reminder_time = form.reminder_time.data,
+                reminder_items = form.num_items.data
+            )
+            db.session.add(reminder_data)
             db.session.commit()
             flash('Reminders succesfully changed!')
             return redirect(url_for('home'))
         return render_template(
                                 'reminders.html',
                                 form=form,
-                                reminder_day=current_user.reminder_day,
-                                reminder_time=current_user.reminder_time,
-                                num_items=current_user.reminder_items
+                                reminders=current_user.reminders.all()
                               )
     else:
         return redirect(url_for('login'))

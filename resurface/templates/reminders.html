@@ -2,13 +2,19 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-    <p>
-    {% if reminder_day != None %}
-        Current Reminder: {{ num_items }} items on {{ reminder_day.capitalize() }} at {{ reminder_time.strftime("%H:%M") }}
-    {% else %}
+    <h3>Current Reminders</h3>
+    <div>
+    {% if reminders|length == 0 %}
         No reminders currently setup. Try setting up a reminder below!
+    {% else %}
+        <ul>
+            {% for reminder in reminders %}
+                <li>{{ reminder.reminder_items }} items on {{ reminder.reminder_day.capitalize() }} at {{ reminder.reminder_time.strftime("%H:%M") }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
-    </p>
+    </div>
+    <h3>Add Reminder</h3>
     <div class="row">
         <div class="col-md-4">
             {{ wtf.quick_form(form) }}
