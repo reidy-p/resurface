@@ -4,18 +4,19 @@ from resurface import application, db
 import random
 from flask_login import current_user, login_user, logout_user, login_required
 from resurface.models import User, Item, InterestedUser, Reminder
-from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm
+from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm, ManualItemForm
 from resurface.email import gmail_authenticate, create_message, send_message, send_email
 from resurface.tasks import sched
 from resurface.imports import pocket
 from resurface.imports.pocket import pocket_import
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 
 @application.route('/', methods=['GET', 'POST'])
 def index():
     form = InterestForm()
     if form.validate_on_submit():
-        interestedUser = InterestedUser(email = form.email.data)
+        interestedUser = InterestedUser(email=form.email.data)
         db.session.add(interestedUser)
         try:
             db.session.commit()
@@ -98,10 +99,28 @@ def reminders():
     else:
         return redirect(url_for('login'))
 
-@application.route("/import-items")
+@application.route("/import-items", methods=['GET', 'POST'])
 def import_items():
+    form = ManualItemForm()
+    if form.validate_on_submit():
+        db.session.add(
+            Item(
+                user_id=current_user.id,
+                title=form.title.data,
+                url=form.url.data,
+                time_added=datetime.now(),
+                source="manual"
+            )
+        )
+        try:
+            db.session.commit()
+            flash('Item added successfully!')
+        except IntegrityError:
+            db.session.rollback()
+            flash('Item already exists!')
+        return redirect(url_for('import_items'))
     pocket_url = pocket_import()
-    return render_template('import.html', pocket_url=pocket_url)
+    return render_template('import.html', pocket_url=pocket_url, form=form)
 
 @application.route('/delete/<int:id>')
 @login_required

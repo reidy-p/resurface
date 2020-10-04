@@ -3,13 +3,15 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Selec
 from wtforms.validators import DataRequired
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange
 from resurface.models import User
+from flask_wtf.html5 import URLField
+from wtforms.validators import url
+
 
 class LoginForm(FlaskForm):
     email = StringField('Email Address', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
-
 
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -48,3 +50,7 @@ class ReminderForm(FlaskForm):
     )
     submit = SubmitField('Submit')
 
+class ManualItemForm(FlaskForm):
+    url = URLField(validators=[url()])
+    title = StringField('Title')
+    submit = SubmitField('Submit')
