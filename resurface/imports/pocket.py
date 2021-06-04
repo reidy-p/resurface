@@ -43,7 +43,8 @@ def callback():
         "consumer_key": application.config['CONSUMER_KEY'],
         "favorite": 1
     }
-    response = requests.get("https://getpocket.com/v3/get/", json=data)
+    headers = {'Content-Type': "application/json;"}
+    response = requests.post("https://getpocket.com/v3/get/", json=data, headers=headers)
     favourites = [favourite for favourite in response.json()['list'].values()]
 
     add_items(current_user.id, favourites)
