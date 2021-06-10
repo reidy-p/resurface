@@ -7,6 +7,8 @@ __pycache__
 gmail_credentials.json
 *.pickle
 resurface-env
+config.py
+secrets.json
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

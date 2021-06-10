@@ -1,7 +1,7 @@
 from flask import render_template, url_for, redirect, session, flash, jsonify, make_response
 import requests
 from resurface import application, db
-from resurface.models import User, Item, InterestedUser
+from resurface.models import User, Item
 from resurface.tasks import sched
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError

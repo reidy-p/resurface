@@ -7,8 +7,9 @@ from resurface.models import User, Item, InterestedUser, Reminder
 from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm, ManualItemForm
 from resurface.email import gmail_authenticate, create_message, send_message, send_email
 from resurface.tasks import sched
-from resurface.imports import pocket
+from resurface.imports import pocket, youtube
 from resurface.imports.pocket import pocket_import
+from resurface.imports.youtube import youtube_import
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 
@@ -120,7 +121,8 @@ def import_items():
             flash('Item already exists!')
         return redirect(url_for('import_items'))
     pocket_url = pocket_import()
-    return render_template('import.html', pocket_url=pocket_url, form=form)
+    youtube_url = youtube_import()
+    return render_template('import.html', pocket_url=pocket_url, youtube_url=youtube_url, form=form)
 
 @application.route('/delete/<int:id>')
 @login_required
@@ -134,3 +136,34 @@ def delete(id):
     flash('Item deleted')
     return redirect(url_for('home'))
 
+@application.route('/youtube')
+def youtube():
+    import os
+    import google_auth_oauthlib.flow
+    import googleapiclient.discovery
+    import googleapiclient.errors
+    
+    scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
+    
+    # Disable OAuthlib's HTTPS verification when running locally.
+    # *DO NOT* leave this option enabled in production.
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    
+    api_service_name = "youtube"
+    api_version = "v3"
+    client_secrets_file = "secrets.json"
+    
+    # Get credentials and create an API client
+    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
+        client_secrets_file, scopes)
+    credentials = flow.run_console()
+    youtube = googleapiclient.discovery.build(
+        api_service_name, api_version, credentials=credentials)
+    
+    request = youtube.channels().list(
+        part="snippet,contentDetails,statistics",
+        mine=True
+    )
+    response = request.execute()
+    
+    print(response)
