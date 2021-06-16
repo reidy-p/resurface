@@ -1,4 +1,9 @@
 Resurface
 --
-[Pocket](https://getpocket.com) allows you to save articles, videos, or any other links and to apply tags and highlighting to them. This project sends you an e-mail with one randomly chosen article from your favourites each week.
+With so much amazing content on the web it can be hard to remember to revisit your favourite articles, videos, or Tweets. Resurface gathers all of your favourite content from the web in one place and sends your regular reminders with samples of your favourites so you can rediscover the best of the web.
+
+### Features
+* Import your favourite content from popular sites like Pocket, YouTube, etc. to view them all in one place
+* Receive periodic e-mails with reminders to rediscover a sample of these favourites
+* [Planned] Quickly search across all of your favourite content
 
