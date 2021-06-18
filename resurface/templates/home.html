@@ -1,27 +1,30 @@
 {% extends "base.html" %}
 {% block app_content %}
-<div>
-    <p>Welcome to Resurface!</p>
-    <p>You currently have {{ num_saved_items }} items saved</p>
-     <div class="container">
-       {% for item in saved_items %}
-       <div class="panel-group">
-         <div class="panel panel-default">
-           <div class="panel-heading">
-             <h4 class="panel-title">
-               <a data-toggle="collapse" href="#collapse{{ loop.index }}">{{ item.title }}</a>
-             </h4>
-           </div>
-           <div id="collapse{{ loop.index }}" class="panel-collapse collapse">
-             <div class="panel-body"><a href="{{ item.url }}">Open</a></div>
-             <div class="panel-body"><a href="{{ url_for('delete', id=item.id) }}">Delete</a></div>
-             <div class="panel-body">Date Added: {{ item.time_added.strftime("%d-%m-%Y") }}</div>
-             <div class="panel-body">Word Count: {{ item.word_count }}</div>
-             <div class="panel-body">Source: {{ item.source }}</div>
-           </div>
-         </div>
-       </div>
-       {% endfor %}
-     </div>
+<p>Welcome to Resurface!</p>
+<p>You currently have {{ num_saved_items }} items saved</p>
+<div class="container">
+  <div class="accordion" id="accordionExample">
+    {% for item in saved_items %}
+    <div class="card" style="overflow: hidden;">
+      <div class="card-header" id="heading{{ loop.item }}">
+        <h5 class="">
+          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}"
+            aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+            {{ item.title }}
+          </button>
+        </h5>
+      </div>
+
+      <div id="collapse{{ loop.index }}" class="collapse" aria-labelledby="heading{{ loop.index }}"
+        data-parent="#accordionExample">
+        <div class="panel-body"><a href="{{ item.url }}">Open</a></div>
+        <div class="panel-body"><a href="{{ url_for('delete', id=item.id) }}">Delete</a></div>
+        <div class="panel-body">Date Added: {{ item.time_added.strftime("%d-%m-%Y") }}</div>
+        <div class="panel-body">Word Count: {{ item.word_count }}</div>
+        <div class="panel-body">Source: {{ item.source }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}
