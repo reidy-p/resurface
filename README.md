@@ -14,3 +14,20 @@ Built using:
 * SQLite
 * [APScheduler](https://apscheduler.readthedocs.io/en/stable/) for scheduling reminders
 * [Bootstrap](https://getbootstrap.com/) for styling
+* AWS Route 53 for domain name registration
+* [Zoho](https://zoho.com) for associating an e-mail address with the domain name
+
+### Config File
+Running the application requires a file called ``config.py`` in the root directory with the following values:
+
+```python
+class Config:
+    # Pocket API keys
+    CONSUMER_KEY=''
+    SECRET_KEY=''
+    # SendGrid API Key
+    MAIL_PASSWORD=""
+    MAIL_DEFAULT_SENDER=""
+```
+
+It also requires keys from Google's API with permissions to view your YouTube channel. This file should also be stored in the root directory and named ``google_api_secrets.json``.

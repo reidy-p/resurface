@@ -13,7 +13,7 @@ def google_auth_flow():
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
     scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
-    client_secrets_file = "secrets.json"
+    client_secrets_file = "google_api_secrets.json"
     
     # Get credentials and create an API client
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(

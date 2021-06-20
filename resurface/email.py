@@ -6,7 +6,7 @@ from flask_mail import Message
 
 def send_mail(email, num_items):
     with application.app_context():
-        msg = Message('Resurface Reminders', recipients=['paul.reidy1@ucdconnect.ie'])
+        msg = Message('Resurface Reminders', recipients=[email])
 
         user = User.query.filter_by(email=email).first()
         items = user.items.all()

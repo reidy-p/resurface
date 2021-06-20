@@ -18,8 +18,6 @@ application.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
 application.config['MAIL_PORT'] = 587
 application.config['MAIL_USE_TLS'] = True
 application.config['MAIL_USERNAME'] = 'apikey'
-#application.config['MAIL_PASSWORD'] = os.environ.get('SENDGRID_API_KEY')
-#application.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
 mail = Mail(application)
 
 db = SQLAlchemy(application)
