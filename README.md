@@ -7,3 +7,10 @@ With so much amazing content on the web it can be hard to remember to revisit yo
 * Receive periodic e-mails with reminders to rediscover a sample of these favourites
 * [Planned] Quickly search across all of your favourite content
 
+### Technologies
+Built using:
+* Flask Web Framework for Python
+* [SendGrid E-mail API](https://sendgrid.com/) for automating e-mails
+* SQLite
+* [APScheduler](https://apscheduler.readthedocs.io/en/stable/) for scheduling reminders
+* [Bootstrap](https://getbootstrap.com/) for styling
