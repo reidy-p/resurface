@@ -1,11 +1,11 @@
-from flask import render_template, url_for, redirect, session, flash, jsonify, make_response
+from flask import render_template, url_for, redirect, session, flash, jsonify, make_response, request
 import requests
 from resurface import application, db
 import random
 from flask_login import current_user, login_user, logout_user, login_required
 from resurface.models import User, Item, InterestedUser, Reminder
 from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm, ManualItemForm
-from resurface.email import gmail_authenticate, create_message, send_message, send_email
+from resurface.email import send_mail
 from resurface.tasks import sched
 from resurface.imports import pocket, youtube
 from resurface.imports.pocket import pocket_import
@@ -75,7 +75,7 @@ def reminders():
     if current_user.is_authenticated:
         if form.validate_on_submit():
             sched.add_job(
-                send_email,
+                send_mail,
                 kwargs={'email': current_user.email, 'num_items': form.num_items.data},
                 trigger='cron',
                 day_of_week=form.reminder_day.data,
