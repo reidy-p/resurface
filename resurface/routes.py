@@ -1,31 +1,18 @@
-from flask import render_template, url_for, redirect, session, flash, jsonify, make_response, request
-import requests
+from flask import render_template, url_for, redirect, flash
 from resurface import application, db
-import random
 from flask_login import current_user, login_user, logout_user, login_required
-from resurface.models import User, Item, InterestedUser, Reminder
-from resurface.forms import LoginForm, RegistrationForm, InterestForm, ReminderForm, ManualItemForm
+from resurface.models import User, Item, Reminder
+from resurface.forms import LoginForm, RegistrationForm, ReminderForm, ManualItemForm
 from resurface.email import send_mail
 from resurface.tasks import sched
-from resurface.imports import pocket, youtube
 from resurface.imports.pocket import pocket_import
 from resurface.imports.youtube import youtube_import
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 
-@application.route('/', methods=['GET', 'POST'])
+@application.route('/', methods=['GET'])
 def index():
-    form = InterestForm()
-    if form.validate_on_submit():
-        interestedUser = InterestedUser(email=form.email.data)
-        db.session.add(interestedUser)
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-        flash('Thanks for registering your interest!')
-        return redirect(url_for('index'))
-    return render_template("index.html", form=form)
+    return render_template("index.html")
 
 @application.route('/register', methods=['GET', 'POST'])
 def register():
@@ -135,35 +122,3 @@ def delete(id):
     db.session.commit()
     flash('Item deleted')
     return redirect(url_for('home'))
-
-@application.route('/youtube')
-def youtube():
-    import os
-    import google_auth_oauthlib.flow
-    import googleapiclient.discovery
-    import googleapiclient.errors
-    
-    scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
-    
-    # Disable OAuthlib's HTTPS verification when running locally.
-    # *DO NOT* leave this option enabled in production.
-    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-    
-    api_service_name = "youtube"
-    api_version = "v3"
-    client_secrets_file = "secrets.json"
-    
-    # Get credentials and create an API client
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        client_secrets_file, scopes)
-    credentials = flow.run_console()
-    youtube = googleapiclient.discovery.build(
-        api_service_name, api_version, credentials=credentials)
-    
-    request = youtube.channels().list(
-        part="snippet,contentDetails,statistics",
-        mine=True
-    )
-    response = request.execute()
-    
-    print(response)

@@ -13,6 +13,7 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
 
+
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -24,9 +25,6 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different email address.')
 
-class InterestForm(FlaskForm):
-    email = StringField('Email Address', validators=[DataRequired()])
-    submit = SubmitField('Submit')
 
 class ReminderForm(FlaskForm):
     reminder_day = SelectField(
@@ -49,6 +47,7 @@ class ReminderForm(FlaskForm):
         validators=[NumberRange(min=1, max=10, message='Please enter a value between 1 and 10')]
     )
     submit = SubmitField('Submit')
+
 
 class ManualItemForm(FlaskForm):
     url = URLField(validators=[url()])

@@ -1,6 +1,6 @@
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
-from flask import render_template, url_for, redirect, session, flash, jsonify, make_response, request
+from flask import url_for, redirect, request
 from resurface import application, db
 from resurface.models import Item
 import os

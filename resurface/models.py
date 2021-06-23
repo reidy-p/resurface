@@ -50,8 +50,3 @@ class Reminder(db.Model):
             self.reminder_time,
             self.reminder_day
         )
-
-class InterestedUser(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-
