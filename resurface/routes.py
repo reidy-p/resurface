@@ -1,5 +1,6 @@
 from logging import log
-from flask import render_template, url_for, redirect, flash, session
+from flask import render_template, url_for, redirect, flash, request as flask_request, abort
+from requests.api import request
 from resurface import application, db
 from flask_login import current_user, login_user, logout_user
 from resurface.models import User, Item, Reminder
@@ -126,14 +127,30 @@ def import_items():
     readwise_url = url_for('readwise')
     return render_template('import.html', pocket_url=pocket_url, youtube_url=youtube_url, readwise_url=readwise_url, form=form)
 
-@application.route('/delete/<int:id>')
+@application.route('/delete-item')
 @login_required
-def delete(id):
-    post = Item.query.get(id)
-    if post is None:
-        flash('Post not found.')
-        return redirect(url_for('home'))
-    db.session.delete(post)
+def delete_item():
+    user_id = flask_request.args.get('user', type=str)
+    title = flask_request.args.get('title', type=str)
+    item = Item.query.filter_by(user_id=user_id, title=title).first()
+
+    if item is None:
+        abort(404)
+
+    db.session.delete(item)
     db.session.commit()
     flash('Item deleted')
+    return redirect(url_for('home'))
+
+@application.route('/delete-reminder/<int:id>')
+@login_required
+def delete_reminder(id):
+    reminder = Reminder.query.get(id)
+
+    if reminder is None:
+        abort(404)
+
+    db.session.delete(reminder)
+    db.session.commit()
+    flash('Reminder deleted')
     return redirect(url_for('home'))

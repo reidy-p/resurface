@@ -9,7 +9,7 @@
     {% else %}
         <ul>
             {% for reminder in reminders %}
-                <li>{{ reminder.reminder_items }} items on {{ reminder.reminder_day.capitalize() }} at {{ reminder.reminder_time.strftime("%H:%M") }}</li>
+                <li>{{ reminder.reminder_items }} items on {{ reminder.reminder_day.capitalize() }} at {{ reminder.reminder_time.strftime("%H:%M") }} (<a href="{{ url_for('delete_reminder', id=reminder.id) }}">Delete</a>)</li>
             {% endfor %}
         </ul>
     {% endif %}

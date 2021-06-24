@@ -20,7 +20,8 @@ def create_mail(items):
 
     message_text = Template("""
         Hello,<br>
-        Here is your Resurface e-mail.
+        <br>
+        Here is your Resurface e-mail with a sample of your favourite content to revisit. Enjoy!
         <br>
         <ul>
           {% for item in items %}
@@ -28,7 +29,6 @@ def create_mail(items):
               <li><a href="{{ item.url }}">{{ item.title }}</a></li>
             {% else %}
               <li> "{{ item.text }}" from {{ item.title }} - {{ item.author }}
-              <li><a href="{{ item.text }}">{{ item.title }}</a></li>
             {% endif %}
           {% endfor %}
         </ul>

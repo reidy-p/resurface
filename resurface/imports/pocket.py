@@ -88,8 +88,8 @@ def add_items(user_id, items):
                 source="pocket"
             )
         )
-        # try:
-        db.session.commit()
-        # except IntegrityError:
-            # db.session.rollback()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
 

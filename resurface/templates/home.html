@@ -19,7 +19,7 @@
         data-parent="#accordionExample">
         {% if item.text is none %}
           <div class="panel-body"><a href="{{ item.url }}">Open</a></div>
-          <div class="panel-body"><a href="{{ url_for('delete', id=item.id) }}">Delete</a></div>
+          <div class="panel-body"><a href="{{ url_for('delete_item', title=item.id, user=current_user.id) }}">Delete</a></div>
           <div class="panel-body">Date Added: {{ item.time_added.strftime("%d-%m-%Y") }}</div>
           <div class="panel-body">Word Count: {{ item.word_count }}</div>
           <div class="panel-body">Source: {{ item.source }}</div>

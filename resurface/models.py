@@ -29,7 +29,7 @@ class Item(db.Model):
     text = db.Column(db.Text(), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     __table_args__ = (
-        db.UniqueConstraint(url, user_id),
+        db.UniqueConstraint(url),
     )
     word_count = db.Column(db.Integer)
     time_added = db.Column(db.DateTime, nullable=False)
