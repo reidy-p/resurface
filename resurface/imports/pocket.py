@@ -1,7 +1,7 @@
-from flask import render_template, url_for, redirect, session, flash, jsonify, make_response
+from flask import url_for, redirect, session
 import requests
 from resurface import application, db
-from resurface.models import User, Item
+from resurface.models import Item
 from resurface.tasks import sched
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
@@ -14,7 +14,7 @@ def pocket_import():
     redirect_uri = url_for("callback", _external=True)
     data = {
         "redirect_uri": redirect_uri,
-        "consumer_key": application.config['CONSUMER_KEY']
+        "consumer_key": application.config['POCKET_CONSUMER_KEY']
     }
     response = requests.post("https://getpocket.com/v3/oauth/request", headers=headers, json=data)
     authorization_code = response.json()['code']
@@ -28,7 +28,7 @@ def callback():
     headers = {'Content-Type': "application/json; charset=UTF-8", "X-Accept": "application/json"}
     data = {
         "code": session['authorization_code'],
-        "consumer_key": application.config['CONSUMER_KEY']
+        "consumer_key": application.config['POCKET_CONSUMER_KEY']
     }
     response = requests.post("https://getpocket.com/v3/oauth/authorize", headers=headers, json=data)
 
@@ -40,7 +40,7 @@ def callback():
 
     data = {
         "access_token": access_token,
-        "consumer_key": application.config['CONSUMER_KEY'],
+        "consumer_key": application.config['POCKET_CONSUMER_KEY'],
         "favorite": 1
     }
     headers = {'Content-Type': "application/json;"}
@@ -64,7 +64,7 @@ def check_pocket_updates(user_id):
 
     data = {
         "access_token": access_token,
-        "consumer_key": application.config['CONSUMER_KEY'],
+        "consumer_key": application.config['POCKET_CONSUMER_KEY'],
         "favorite": 1
     }
     response = requests.get("https://getpocket.com/v3/get/", json=data)
@@ -88,8 +88,8 @@ def add_items(user_id, items):
                 source="pocket"
             )
         )
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
+        # try:
+        db.session.commit()
+        # except IntegrityError:
+            # db.session.rollback()
 

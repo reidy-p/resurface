@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>Readwise Access Token</h1>
+    <p>You need to manually supply your own Readwise Access Token to allow Resurface to fetch and store your highlights. You can find your token <a href="https://readwise.io/access_token">here.</a></p>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+{% endblock %}

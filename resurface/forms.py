@@ -53,3 +53,8 @@ class ManualItemForm(FlaskForm):
     url = URLField(validators=[url()])
     title = StringField('Title')
     submit = SubmitField('Submit')
+
+
+class AccessTokenForm(FlaskForm):
+    access_token = StringField('Readwise Access Token')
+    submit = SubmitField('Submit')

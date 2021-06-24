@@ -24,9 +24,9 @@ Running the application requires a file called ``config.py`` in the root directo
 
 ```python
 class Config:
-    # Pocket API keys
-    CONSUMER_KEY=''
     SECRET_KEY=''
+    # Pocket API key
+    POCKET_CONSUMER_KEY=''
     # SendGrid API Key
     MAIL_PASSWORD=""
     MAIL_DEFAULT_SENDER=""

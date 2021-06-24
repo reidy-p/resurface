@@ -6,6 +6,7 @@ from resurface.models import Item
 import os
 from flask_login import current_user
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 def google_auth_flow():
     # Disable OAuthlib's HTTPS verification when running locally.

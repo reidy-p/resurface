@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     items = db.relationship('Item', backref='user', lazy='dynamic')
     reminders = db.relationship('Reminder', backref='user', lazy='dynamic')
+    readwise_access_token = db.Column(db.String(128), nullable=True)
 
     def __repr__(self):
         return '<User {}>'.format(self.email)
@@ -23,15 +24,15 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 class Item(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String)
+    title = db.Column(db.String, primary_key=True)
     url = db.Column(db.String(140))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    text = db.Column(db.Text(), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     __table_args__ = (
         db.UniqueConstraint(url, user_id),
     )
     word_count = db.Column(db.Integer)
-    time_added = db.Column(db.DateTime)
+    time_added = db.Column(db.DateTime, nullable=False)
     source = db.Column(db.String)
 
     def __repr__(self):

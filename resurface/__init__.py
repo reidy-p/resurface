@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask
 from flask_executor import Executor
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
