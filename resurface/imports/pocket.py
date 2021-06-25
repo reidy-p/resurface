@@ -34,10 +34,6 @@ def callback():
 
     access_token = response.json()['access_token']
 
-    if not os.path.exists('pocket_access_token.pickle'):
-        with open('pocket_access_token.pickle', 'wb') as token:
-            pickle.dump(access_token, token)
-
     data = {
         "access_token": access_token,
         "consumer_key": application.config['POCKET_CONSUMER_KEY'],
@@ -49,28 +45,8 @@ def callback():
 
     add_items(current_user.id, favourites)
 
-    sched.add_job(
-        check_pocket_updates,
-        kwargs={'user_id': current_user.id},
-        trigger='interval',
-        hours=1
-    )
-
     return redirect(url_for('home'))
 
-def check_pocket_updates(user_id):
-    with open('pocket_access_token.pickle', 'rb') as token:
-        access_token = pickle.load(token)
-
-    data = {
-        "access_token": access_token,
-        "consumer_key": application.config['POCKET_CONSUMER_KEY'],
-        "favorite": 1
-    }
-    response = requests.get("https://getpocket.com/v3/get/", json=data)
-    favourites = [favourite for favourite in response.json()['list'].values()]
-
-    add_items(user_id, favourites)
 
 def add_items(user_id, items):
     for item in items:
