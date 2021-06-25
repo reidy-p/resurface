@@ -154,3 +154,7 @@ def delete_reminder(id):
     db.session.commit()
     flash('Reminder deleted')
     return redirect(url_for('home'))
+
+@application.route("/privacy-policy")
+def privacy():
+    return render_template("privacy.html")
