@@ -2,12 +2,6 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<style>
-a:hover {
-  background-color: #D3D3D3;
-}
-</style>
-
 <div class="container" style="display:flex; flex-wrap:wrap; padding:5px">
     <a style="height: 200px; width: 200px; margin: 10px;" href={{pocket_url}}><img style="height:100%; width:100%; object-fit:contain" class="item" src="{{ url_for('static', filename='img/pocket_logo.png') }}" alt="Pocket"></a>
     <a style="height: 200px; width: 200px; margin: 10px;" href={{youtube_url}}><img style="height:100%; width:100%; object-fit:contain" class="item" src="{{ url_for('static', filename='img/youtube_logo.png') }}" alt="YouTube"></a>
