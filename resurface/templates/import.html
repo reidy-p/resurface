@@ -2,13 +2,26 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<div class="container" style="display:flex; flex-wrap:wrap; padding:5px">
+<h2>Import Favourite Items</h2>
+<div>
+    On this page you can import you favourite content from the following services:
+    <ul>
+        <li>Favourite items from your Pocket account</li>
+        <li>Liked videos from your YouTube account</li>
+        <li>Highlights from your Readwise account</li>
+    </ul>
+    Click on the relevant icon below to sign-in and grant access to the source.
+</div>
+<div class="container" style="display:flex; flex-wrap:wrap; padding:5px; justify-content: center;">
     <a style="height: 200px; width: 200px; margin: 10px;" href={{pocket_url}}><img style="height:100%; width:100%; object-fit:contain" class="item" src="{{ url_for('static', filename='img/pocket_logo.png') }}" alt="Pocket"></a>
     <a style="height: 200px; width: 200px; margin: 10px;" href={{youtube_url}}><img style="height:100%; width:100%; object-fit:contain" class="item" src="{{ url_for('static', filename='img/youtube_logo.png') }}" alt="YouTube"></a>
     <a style="height: 200px; width: 200px; margin: 10px;" href={{readwise_url}}><img style="height:100%; width:100%; object-fit:contain" class="item" src="{{ url_for('static', filename='img/readwise_logo.png') }}" alt="Readwise"></a>
 </div>
 
 <h2>Manual Import</h2>
+<div style="padding-bottom: 10px;">
+    Alternatively, you can manually add any link using the form below.
+</div>
 <div class="row">
     <div class="col-md-4">
         {{ wtf.quick_form(form) }}
